@@ -1,30 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { processPdfFile } from "./actions";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
-import { auth } from "@/lib/auth";
-import { apiFetch } from "@/lib/api";
+import { useAuth } from "@/hooks/use-auth";
+import { apiFetch } from "@/lib/server-api";
 
 export default function PDFUpload() {
+  const user = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
     type: "error" | "success";
     text: string;
   } | null>(null);
 
-  const [user, setUser] = useState<any>(null);
+  if (!user) {
+    return <div></div>;
+  }
 
-  useEffect(() => {
-    setUser(auth.getUser());
-  }, []);
-
-  if (user && user?.role !== "admin") {
-    return <div>Access Denied</div>;
+  if (user?.role != 'admin') {
+    return <div></div>;
   }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,19 +36,16 @@ export default function PDFUpload() {
       const formData = new FormData();
       formData.append("file", file);
 
-      // const result = await processPdfFile(formData);
-      console.log("user", user);
-      const response = await apiFetch("ingest", {
+      const response = await fetch("/api/ingest", {
         method: "POST",
         body: formData
       });
 
       const data = await response.json();
-
       if (data) {
         setMessage({
           type: "success",
-          text: data.message || "PDF processed successfully",
+          text: data?.message || "PDF processed successfully",
         });
         e.target.value = "";
       } else {

@@ -1,14 +1,14 @@
-import { getUserTokenFromServer } from "./auth-server";
+import { auth } from "./auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
-    const token = await getUserTokenFromServer();
+    const token = auth.getToken()
 
     const response = await fetch(`${API_URL}${endpoint}`, {
         ...options,
         headers: {
-            ...(endpoint != 'ingest' ? { "Content-Type": "application/json" } : {}),
+            "Content-Type": "application/json",
             Authorization: token ? `Bearer ${token}` : "",
             ...(options.headers || {}),
         },

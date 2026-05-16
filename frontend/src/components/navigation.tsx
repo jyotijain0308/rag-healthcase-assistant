@@ -6,7 +6,7 @@ export const Navigation = () => {
   const user = useAuth();
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   async function logout() {

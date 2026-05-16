@@ -1,8 +1,7 @@
-// lib/auth-server.ts
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 
-const SECRET = new TextEncoder().encode("your-secret");
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function getUserFromServer() {
     const token = (await cookies()).get("token")?.value;

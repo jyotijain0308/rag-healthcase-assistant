@@ -21,6 +21,7 @@ async def ingest_pdf(
     user = Depends(require_permissions([Permission.INGEST]))
 ):
 
+    print("file", file)
     # Validate PDF
     if file.content_type != "application/pdf":
         return {
